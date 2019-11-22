@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">LR3</string>
+    <string name="create_sample_data">Create sample data</string>
+    <string name="delete_all_notes">Delete all notes</string>
+    <string name="all_deleted">All notes deleted</string>
+    <string name="are_you_sure_delete_all_notes">Are you sure to DELETE ALL your notes? This action cannot be undone!</string>
 </resources>
