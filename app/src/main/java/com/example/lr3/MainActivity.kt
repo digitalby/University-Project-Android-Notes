@@ -1,14 +1,18 @@
 package com.example.lr3
 
+import android.app.Activity
 import android.content.ContentValues
 import android.content.DialogInterface
+import android.content.Intent
 import android.database.Cursor
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.CursorAdapter
 import android.widget.ListView
-import android.widget.SimpleCursorAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -17,7 +21,11 @@ import androidx.loader.content.CursorLoader
 import androidx.loader.content.Loader
 
 class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> {
-    private lateinit var cursorAdapter: SimpleCursorAdapter
+    companion object {
+        const val EDITOR_REQUEST_CODE = 1001
+    }
+
+    private lateinit var cursorAdapter: CursorAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,12 +37,17 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
 //            null,
 //            null,
 //            null)
-        val from = arrayOf(DBOpenHelper.NOTE_TEXT)
-        val to = intArrayOf(android.R.id.text1)
 
-        cursorAdapter = SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, null, from, to, 0)
+        cursorAdapter = NotesCursorAdapter(this, null, 0)
         val listView: ListView = findViewById(R.id.list)
         listView.adapter = cursorAdapter
+
+        listView.setOnItemClickListener { parent, view, position, id ->
+            val intent = Intent(this, EditorActivity::class.java)
+            val uri = Uri.parse("${NotesProvider.CONTENT_URI}/$id")
+            intent.putExtra(NotesProvider.CONTENT_ITEM_TYPE, uri)
+            startActivityForResult(intent, EDITOR_REQUEST_CODE)
+        }
 
         supportLoaderManager.initLoader(0, null, this)
     }
@@ -107,5 +120,17 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
 
     private fun restartLoader() {
         supportLoaderManager.restartLoader(0, null, this)
+    }
+
+    fun openEditorForNewNote(view: View) {
+        val intent = Intent(this, EditorActivity::class.java)
+        startActivityForResult(intent, EDITOR_REQUEST_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(requestCode == EDITOR_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            restartLoader()
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 }

@@ -2,26 +2,28 @@ package com.example.lr3
 
 import android.content.ContentProvider
 import android.content.ContentValues
-import android.content.IntentFilter
 import android.content.UriMatcher
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 
 
-public class NotesProvider: ContentProvider() {
+class NotesProvider: ContentProvider() {
 
     private lateinit var database: SQLiteDatabase
 
     companion object {
         private val uriMatcher = UriMatcher(UriMatcher.NO_MATCH)
 
-        private val AUTHORITY = "com.example.LR3.notesprovider"
-        private val BASE_PATH = "notes"
-        public val CONTENT_URI = Uri.parse("content://$AUTHORITY/$BASE_PATH")
+        private const val AUTHORITY = "com.example.LR3.notesprovider"
+        private const val BASE_PATH = "notes"
+        val CONTENT_URI: Uri = Uri.parse("content://$AUTHORITY/$BASE_PATH")
 
-        private val NOTES = 1
-        private val NOTES_ID = 2
+        private const val NOTES = 1
+        private const val NOTES_ID = 2
+
+        const val CONTENT_ITEM_TYPE = "Note"
+
         init {
             uriMatcher.addURI(AUTHORITY, BASE_PATH, NOTES)
             uriMatcher.addURI(AUTHORITY, "$BASE_PATH/#", NOTES_ID)
@@ -30,8 +32,7 @@ public class NotesProvider: ContentProvider() {
 
     override fun insert(uri: Uri, values: ContentValues?): Uri? {
         val id = database.insert(DBOpenHelper.TABLE_NOTES, null, values)
-        val uri = Uri.parse("$BASE_PATH/$id")
-        return uri
+        return Uri.parse("$BASE_PATH/$id")
     }
 
     override fun query(
@@ -41,9 +42,15 @@ public class NotesProvider: ContentProvider() {
         selectionArgs: Array<out String>?,
         sortOrder: String?
     ): Cursor? {
+        val newSelection = if(uriMatcher.match(uri) == NOTES_ID) {
+            "${DBOpenHelper.NOTE_ID}=${uri.lastPathSegment}"
+        } else {
+            selection
+        }
+
         return database.query(DBOpenHelper.TABLE_NOTES,
                               DBOpenHelper.ALL_COLUMNS,
-                              selection,
+                              newSelection,
                   null,
                       null,
                        null,
