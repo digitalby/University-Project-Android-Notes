@@ -3,5 +3,6 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#1A237E</color>
     <color name="colorAccent">#C5CAE9</color>
-    <color name="colorListItemText">#333</color>
+    <color name="colorListItemPrimaryText">#333</color>
+    <color name="colorListItemSecondaryText">#AAA</color>
 </resources>

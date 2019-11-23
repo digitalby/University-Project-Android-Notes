@@ -15,13 +15,13 @@ class NotesCursorAdapter(context: Context?, cursor: Cursor?, flags: Int):
     }
 
     override fun bindView(view: View?, context: Context?, cursor: Cursor?) {
-        var noteText = cursor?.getString(cursor.getColumnIndex(DBOpenHelper.NOTE_TEXT))
-        val lineFeedPosition = noteText?.indexOf('\n')
-        if(lineFeedPosition != -1) {
-            noteText = "${noteText?.substring(0, lineFeedPosition!!)}…"
-        }
-        val textView: TextView? = view?.findViewById(R.id.textViewNote)
-        textView?.text = noteText
+        val noteTitle = cursor?.getString(cursor.getColumnIndex(DBOpenHelper.NOTE_TITLE))
+        val titleTextView: TextView? = view?.findViewById(R.id.textViewNote)
+        titleTextView?.text = noteTitle
+
+        val noteDateTime = cursor?.getString(cursor.getColumnIndex(DBOpenHelper.NOTE_CREATED))
+        val dateTimeTextView: TextView? = view?.findViewById(R.id.textViewDateTime)
+        dateTimeTextView?.text = noteDateTime
     }
 
 }

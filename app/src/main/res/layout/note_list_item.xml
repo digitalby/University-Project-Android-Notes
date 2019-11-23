@@ -9,8 +9,10 @@
         android:id="@+id/imageDocumentIcon"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:src="@drawable/file_document_box"
-        android:contentDescription="@string/note" />
+        android:layout_alignParentTop="true"
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/note"
+        android:src="@drawable/file_document_box" />
 
     <TextView
         android:id="@+id/textViewNote"
@@ -18,12 +20,52 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_margin="4dp"
+        android:layout_margin="2dp"
         android:layout_toEndOf="@+id/imageDocumentIcon"
         android:layout_toRightOf="@+id/imageDocumentIcon"
         android:singleLine="true"
-        android:text=""
-        android:textColor="@color/colorListItemText"
-        android:textSize="18sp" />
+        android:text="Title goes here"
+        android:textColor="@color/colorListItemPrimaryText"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/textViewTags"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textViewNote"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="1dp"
+        android:layout_marginRight="1dp"
+        android:layout_toEndOf="@+id/imageDocumentIcon"
+        android:layout_toRightOf="@+id/imageDocumentIcon"
+        android:singleLine="true"
+        android:text="Tags go here"
+        android:textColor="@color/colorListItemSecondaryText"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/textViewDateTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textViewTags"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="1dp"
+        android:layout_marginRight="1dp"
+        android:layout_toEndOf="@+id/imageDocumentIcon"
+        android:layout_toRightOf="@+id/imageDocumentIcon"
+        android:singleLine="true"
+        android:gravity="center|start"
+        android:text="DateTime goes here"
+        android:textColor="@color/colorListItemSecondaryText"
+        android:textSize="12sp" />
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:layout_alignParentRight="true"-->
+<!--        android:layout_margin="1dp"-->
+<!--        android:layout_toEndOf="@+id/textViewTags"-->
+<!--        android:layout_toRightOf="@+id/textViewTags"-->
+<!--        android:layout_below="@id/textViewNote"-->
+
 
 </RelativeLayout>

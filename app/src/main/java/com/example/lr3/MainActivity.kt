@@ -52,13 +52,6 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         supportLoaderManager.initLoader(0, null, this)
     }
 
-    private fun insertNote(noteText: String) {
-        val values = ContentValues()
-        values.put(DBOpenHelper.NOTE_TEXT, noteText)
-        val noteUri = contentResolver.insert(NotesProvider.CONTENT_URI, values)
-        Log.d("MainActivity", "Inserted note ${noteUri?.lastPathSegment}")
-    }
-
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
         return CursorLoader(this,
                                     NotesProvider.CONTENT_URI,
@@ -82,9 +75,7 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId == R.id.action_create_sample) {
-            insertSampleData()
-        } else if (item.itemId == R.id.action_delete_all) {
+        if (item.itemId == R.id.action_delete_all) {
             deleteAllNotes()
         }
         return super.onOptionsItemSelected(item)
@@ -109,13 +100,6 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
                .setPositiveButton(getString(android.R.string.yes), dialogClickListener)
                .setNegativeButton(getString(android.R.string.no), dialogClickListener)
                .show()
-    }
-
-    private fun insertSampleData() {
-        insertNote("Simple note")
-        insertNote("Multi-line\nnote")
-        insertNote("Very long note with a long text that exceeds the width of the screen")
-        restartLoader()
     }
 
     private fun restartLoader() {

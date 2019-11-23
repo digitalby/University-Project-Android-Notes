@@ -8,4 +8,9 @@
     <string name="button_text_new_note">New Note</string>
     <string name="action_delete">Delete</string>
     <string name="note">Note</string>
+    <string name="edittext_hint_note_tags">Tags (comma-separated)</string>
+    <string name="edittext_hint_note_title">Title</string>
+    <string name="note_deleted">Note deleted</string>
+    <string name="delete_note">Delete note</string>
+    <string name="are_you_sure_delete_note">Are you sure to delete this node? This action cannot be undone.</string>
 </resources>

@@ -19,8 +19,8 @@ class NotesProvider: ContentProvider() {
         private const val BASE_PATH = "notes"
         val CONTENT_URI: Uri = Uri.parse("content://$AUTHORITY/$BASE_PATH")
 
-        private const val NOTES = 1
-        private const val NOTES_ID = 2
+        private const val NOTES = 1 //the URI ID to notes path root
+        private const val NOTES_ID = 2 //the URI ID to a specific note
 
         const val CONTENT_ITEM_TYPE = "Note"
 
@@ -54,7 +54,7 @@ class NotesProvider: ContentProvider() {
                   null,
                       null,
                        null,
-                      "${DBOpenHelper.NOTE_CREATED} DESC")
+                       "${DBOpenHelper.NOTE_CREATED} DESC")
 
     }
 
