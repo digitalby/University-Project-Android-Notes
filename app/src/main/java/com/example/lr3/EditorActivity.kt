@@ -14,7 +14,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 import java.util.*
 
 
@@ -29,6 +28,7 @@ class EditorActivity : AppCompatActivity() {
     private lateinit var noteFilter: String
     private var oldText: String? = null
     private var oldTitle: String? = null
+    private var oldTagString: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +40,7 @@ class EditorActivity : AppCompatActivity() {
         dateTimeTextView = findViewById(R.id.dateTimeTextView)
 
         val intent = this.intent
-        val uri: Uri? = intent.getParcelableExtra(NotesProvider.CONTENT_ITEM_TYPE)
+        val uri: Uri? = intent.getParcelableExtra(NotesProvider.NOTE_ITEM_TYPE)
 
         if (uri == null) {
             action = Intent.ACTION_INSERT
@@ -50,15 +50,17 @@ class EditorActivity : AppCompatActivity() {
             action = Intent.ACTION_EDIT
             noteFilter = "${DBOpenHelper.NOTE_ID}=${uri.lastPathSegment}"
 
-            val cursor = contentResolver.query(uri, DBOpenHelper.ALL_COLUMNS, noteFilter, null, null)
+            val cursor = contentResolver.query(uri, DBOpenHelper.ALL_COLUMNS_NOTES, noteFilter, null, null)
             cursor?.moveToFirst()
             oldText = cursor?.getString(cursor.getColumnIndex(DBOpenHelper.NOTE_TEXT))
             oldTitle = cursor?.getString(cursor.getColumnIndex(DBOpenHelper.NOTE_TITLE))
+            oldTagString = cursor?.getString(cursor.getColumnIndex(DBOpenHelper.NOTE_TAGSTRING))
             val timestamp = cursor?.getString(cursor.getColumnIndex(DBOpenHelper.NOTE_CREATED))
             dateTimeTextView.text = timestamp
 
             editor.setText(oldText!!)
             titleEditText.setText(oldTitle!!)
+            tagsEditText.setText(oldTagString!!)
         }
     }
 
@@ -78,37 +80,125 @@ class EditorActivity : AppCompatActivity() {
     private fun finishEditing() {
         val newText = editor.text.toString().trim()
         var newTitle = titleEditText.text.toString().trim()
+        val newTags = tagsEditText.text.toString().trim()
         if(newTitle.isEmpty()) {
             newTitle = processEmptyTitle()
         }
         when(action) {
             Intent.ACTION_INSERT -> {
-                insertNote(newTitle, newText)
+                insertNote(newTitle, newText, newTags)
             }
             Intent.ACTION_EDIT -> {
-                updateNote(newTitle, newText)
+                updateNote(newTitle, newText, newTags)
             }
         }
         finish()
     }
 
-    private fun updateNote(noteTitle: String, noteText: String) {
+    private fun updateNote(noteTitle: String, noteText: String, noteTagString: String) {
         val values = ContentValues()
         values.put(DBOpenHelper.NOTE_TITLE, noteTitle)
         values.put(DBOpenHelper.NOTE_TEXT, noteText)
         values.put(DBOpenHelper.NOTE_CREATED, getCurrentDate())
-        contentResolver.update(NotesProvider.CONTENT_URI, values, noteFilter, null)
+        if(oldTagString == noteTagString) {
+            values.put(DBOpenHelper.NOTE_TAGSTRING, oldTagString)
+        } else {
+            val uri: Uri? = intent.getParcelableExtra(NotesProvider.NOTE_ITEM_TYPE)
+            val id = uri?.lastPathSegment?.toInt()
+            unlinkTags(id!!)
+            val tagList = tagStringToList(noteTagString)
+            val tagString = tagList.joinToString()
+            values.put(DBOpenHelper.NOTE_TAGSTRING, tagString)
+            val tagsToAdd = insertTagsIfNeeded(tagList)
+            linkTags(tagsToAdd, id)
+            sanitizeTags()
+        }
+
+        contentResolver.update(NotesProvider.NOTES_URI, values, noteFilter, null)
         Toast.makeText(this, "Note updated", Toast.LENGTH_SHORT).show()
         setResult(RESULT_OK)
     }
 
-    private fun insertNote(noteTitle: String, noteText: String) {
+    private fun insertNote(noteTitle: String, noteText: String, noteTagString: String) {
         val values = ContentValues()
         values.put(DBOpenHelper.NOTE_TITLE, noteTitle)
         values.put(DBOpenHelper.NOTE_TEXT, noteText)
         values.put(DBOpenHelper.NOTE_CREATED, getCurrentDate())
-        contentResolver.insert(NotesProvider.CONTENT_URI, values)
+
+
+        val tagList = tagStringToList(noteTagString)
+        val tagString = tagList.joinToString()
+        values.put(DBOpenHelper.NOTE_TAGSTRING, tagString)
+        val uri = contentResolver.insert(NotesProvider.NOTES_URI, values)
+        val id = uri?.lastPathSegment?.toInt()
+        val tagsToAdd = insertTagsIfNeeded(tagList)
+        linkTags(tagsToAdd, id!!)
+
         setResult(RESULT_OK)
+    }
+
+    fun tagStringToList(tagString: String): List<String> {
+        var tags = tagString.split(',')
+        tags = tags.map { tag -> tag.trim() }
+        tags = tags.distinct()
+        tags = tags.filter { tag -> !tag.isNullOrEmpty() }
+        tags = tags.sorted()
+        return tags
+    }
+
+    fun linkTags(tagList: List<Int>, noteID: Int) {
+        for(tagID in tagList) {
+            val linkValues = ContentValues()
+            linkValues.put(DBOpenHelper.LINK_NOTE_ID, noteID)
+            linkValues.put(DBOpenHelper.LINK_TAG_ID, tagID)
+            contentResolver.insert(NotesProvider.LINKS_URI, linkValues)
+        }
+    }
+
+    fun unlinkTags(noteId: Int) {
+        val selection = "${DBOpenHelper.LINK_NOTE_ID} = $noteId"
+        val cursor = contentResolver.delete(NotesProvider.LINKS_URI, selection, null)
+    }
+
+    fun sanitizeTags() {
+        val cursor = contentResolver.query(NotesProvider.TAGS_URI,
+            DBOpenHelper.ALL_COLUMNS_TAGS, null, null, null)
+        if(cursor?.moveToFirst() == true) {
+            val tag = cursor.getString(cursor.getColumnIndex(DBOpenHelper.TAG_NAME))
+            val selection = "${DBOpenHelper.TAG_NAME} = '$tag'"
+            val cursorId = cursor.getInt(cursor.getColumnIndex(DBOpenHelper.TAG_ID))
+            cursor.close()
+            var linkSelection = "${DBOpenHelper.LINK_TAG_ID} = $cursorId"
+            val cursorLinks = contentResolver.query(NotesProvider.LINKS_URI,
+                DBOpenHelper.ALL_COLUMNS_LINKS, linkSelection, null, null)
+            if(cursorLinks?.moveToFirst() == false) {
+                contentResolver.delete(NotesProvider.TAGS_URI, selection, null)
+            }
+            cursorLinks?.close()
+        }
+    }
+
+    fun insertTagsIfNeeded(tags: List<String>): List<Int>{
+        val ret = mutableListOf<Int>()
+
+        for(tag in tags) {
+            val selection = "${DBOpenHelper.TAG_NAME} = '$tag'"
+            val cursor = contentResolver.query(NotesProvider.TAGS_URI,
+                DBOpenHelper.ALL_COLUMNS_TAGS, selection, null, null)
+            if(cursor?.moveToFirst() == true) {
+                ret.add(cursor.getInt(cursor.getColumnIndex(DBOpenHelper.TAG_ID)))
+            } else {
+                val valuesTags = ContentValues()
+                valuesTags.put(DBOpenHelper.TAG_NAME, tag)
+                val uri = contentResolver.insert(NotesProvider.TAGS_URI, valuesTags)
+                val id = uri?.lastPathSegment?.toInt()
+                if(id != null)
+                    ret.add(id)
+            }
+            cursor?.close()
+        }
+
+        return ret
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -117,7 +207,11 @@ class EditorActivity : AppCompatActivity() {
     }
 
     private fun deleteNote() {
-        contentResolver.delete(NotesProvider.CONTENT_URI, noteFilter, null)
+        contentResolver.delete(NotesProvider.NOTES_URI, noteFilter, null)
+        val uri: Uri? = intent.getParcelableExtra(NotesProvider.NOTE_ITEM_TYPE)
+        val id = uri?.lastPathSegment?.toInt()
+        unlinkTags(id!!)
+        sanitizeTags()
         Toast.makeText(this, "Note deleted", Toast.LENGTH_SHORT).show()
         setResult(RESULT_OK)
         finish()

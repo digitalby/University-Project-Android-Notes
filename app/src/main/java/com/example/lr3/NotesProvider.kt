@@ -16,23 +16,52 @@ class NotesProvider: ContentProvider() {
         private val uriMatcher = UriMatcher(UriMatcher.NO_MATCH)
 
         private const val AUTHORITY = "com.example.LR3.notesprovider"
-        private const val BASE_PATH = "notes"
-        val CONTENT_URI: Uri = Uri.parse("content://$AUTHORITY/$BASE_PATH")
+        private const val BASE_PATH_NOTES = "notes"
+        private const val BASE_PATH_TAGS = "tags"
+        private const val BASE_PATH_LINKS = "links"
+        val NOTES_URI: Uri = Uri.parse("content://$AUTHORITY/$BASE_PATH_NOTES")
+        val TAGS_URI: Uri = Uri.parse("content://$AUTHORITY/$BASE_PATH_TAGS")
+        val LINKS_URI: Uri = Uri.parse("content://$AUTHORITY/$BASE_PATH_LINKS")
 
         private const val NOTES = 1 //the URI ID to notes path root
         private const val NOTES_ID = 2 //the URI ID to a specific note
+        private const val TAGS = 3
+        private const val TAGS_ID = 4
+        private const val LINKS = 5
+        private const val LINKS_ID = 6
 
-        const val CONTENT_ITEM_TYPE = "Note"
+        const val NOTE_ITEM_TYPE = "Note"
+        const val TAG_ITEM_TYPE = "Tag"
+        const val LINK_ITEM_TYPE = "Link"
 
         init {
-            uriMatcher.addURI(AUTHORITY, BASE_PATH, NOTES)
-            uriMatcher.addURI(AUTHORITY, "$BASE_PATH/#", NOTES_ID)
+            uriMatcher.addURI(AUTHORITY, BASE_PATH_NOTES, NOTES)
+            uriMatcher.addURI(AUTHORITY, "$BASE_PATH_NOTES/#", NOTES_ID)
+            uriMatcher.addURI(AUTHORITY, BASE_PATH_TAGS, TAGS)
+            uriMatcher.addURI(AUTHORITY, "$BASE_PATH_TAGS/#", TAGS_ID)
+            uriMatcher.addURI(AUTHORITY, BASE_PATH_LINKS, LINKS)
+            uriMatcher.addURI(AUTHORITY, "$BASE_PATH_LINKS/#", LINKS_ID)
         }
     }
 
     override fun insert(uri: Uri, values: ContentValues?): Uri? {
-        val id = database.insert(DBOpenHelper.TABLE_NOTES, null, values)
-        return Uri.parse("$BASE_PATH/$id")
+        var id: Long? = null
+        var basePath: String? = null
+        when(uriMatcher.match(uri)) {
+            NOTES -> {
+                id = database.insert(DBOpenHelper.TABLE_NOTES, null, values)
+                basePath = BASE_PATH_NOTES
+            }
+            TAGS -> {
+                id = database.insert(DBOpenHelper.TABLE_TAGS, null, values)
+                basePath = BASE_PATH_TAGS
+            }
+            LINKS -> {
+                id = database.insert(DBOpenHelper.TABLE_LINKS, null, values)
+                basePath = BASE_PATH_LINKS
+            }
+        }
+        return Uri.parse("$basePath/$id")
     }
 
     override fun query(
@@ -42,20 +71,51 @@ class NotesProvider: ContentProvider() {
         selectionArgs: Array<out String>?,
         sortOrder: String?
     ): Cursor? {
-        val newSelection = if(uriMatcher.match(uri) == NOTES_ID) {
-            "${DBOpenHelper.NOTE_ID}=${uri.lastPathSegment}"
-        } else {
-            selection
+        when(uriMatcher.match(uri)) {
+            NOTES -> return database.query(DBOpenHelper.TABLE_NOTES,
+                DBOpenHelper.ALL_COLUMNS_NOTES,
+                selection,
+                null,
+                null,
+                null,
+                "${DBOpenHelper.NOTE_CREATED} DESC")
+            NOTES_ID -> return database.query(DBOpenHelper.TABLE_NOTES,
+                DBOpenHelper.ALL_COLUMNS_NOTES,
+                "${DBOpenHelper.NOTE_ID}=${uri.lastPathSegment}",
+                null,
+                null,
+                null,
+                "${DBOpenHelper.NOTE_CREATED} DESC")
+            TAGS -> return database.query(DBOpenHelper.TABLE_TAGS,
+                DBOpenHelper.ALL_COLUMNS_TAGS,
+                selection,
+                null,
+                null,
+                null,
+                "${DBOpenHelper.TAG_NAME} ASC")
+            TAGS_ID -> return database.query(DBOpenHelper.TABLE_TAGS,
+                DBOpenHelper.ALL_COLUMNS_TAGS,
+                "${DBOpenHelper.TAG_ID}=${uri.lastPathSegment}",
+                null,
+                null,
+                null,
+                "${DBOpenHelper.TAG_NAME} ASC")
+            LINKS -> return database.query(DBOpenHelper.TABLE_LINKS,
+                DBOpenHelper.ALL_COLUMNS_LINKS,
+                selection,
+                null,
+                null,
+                null,
+                "${DBOpenHelper.LINK_NOTE_ID} DESC")
+            LINKS_ID -> return database.query(DBOpenHelper.TABLE_LINKS,
+                DBOpenHelper.ALL_COLUMNS_LINKS,
+                "${DBOpenHelper.LINK_ID}=${uri.lastPathSegment}",
+                null,
+                null,
+                null,
+                "${DBOpenHelper.LINK_NOTE_ID} DESC")
         }
-
-        return database.query(DBOpenHelper.TABLE_NOTES,
-                              DBOpenHelper.ALL_COLUMNS,
-                              newSelection,
-                  null,
-                      null,
-                       null,
-                       "${DBOpenHelper.NOTE_CREATED} DESC")
-
+        return null
     }
 
     override fun onCreate(): Boolean {
@@ -70,11 +130,21 @@ class NotesProvider: ContentProvider() {
         selection: String?,
         selectionArgs: Array<out String>?
     ): Int {
-        return database.update(DBOpenHelper.TABLE_NOTES, values, selection, selectionArgs)
+        when(uriMatcher.match(uri)) {
+            NOTES -> return database.update(DBOpenHelper.TABLE_NOTES, values, selection, selectionArgs)
+            TAGS -> return database.update(DBOpenHelper.TABLE_TAGS, values, selection, selectionArgs)
+            LINKS -> return database.update(DBOpenHelper.TABLE_LINKS, values, selection, selectionArgs)
+        }
+        return 0
     }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?): Int {
-        return database.delete(DBOpenHelper.TABLE_NOTES, selection, selectionArgs)
+        when(uriMatcher.match(uri)) {
+            NOTES -> return database.delete(DBOpenHelper.TABLE_NOTES, selection, selectionArgs)
+            TAGS -> database.delete(DBOpenHelper.TABLE_TAGS, selection, selectionArgs)
+            LINKS -> database.delete(DBOpenHelper.TABLE_LINKS, selection, selectionArgs)
+        }
+        return 0
     }
 
     override fun getType(uri: Uri): String? {

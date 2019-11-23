@@ -1,5 +1,6 @@
 package com.example.lr3
 
+import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.view.LayoutInflater
@@ -22,6 +23,12 @@ class NotesCursorAdapter(context: Context?, cursor: Cursor?, flags: Int):
         val noteDateTime = cursor?.getString(cursor.getColumnIndex(DBOpenHelper.NOTE_CREATED))
         val dateTimeTextView: TextView? = view?.findViewById(R.id.textViewDateTime)
         dateTimeTextView?.text = noteDateTime
+
+        val noteTagString = cursor?.getString(cursor.getColumnIndex(DBOpenHelper.NOTE_TAGSTRING))
+        val textViewTags: TextView? = view?.findViewById(R.id.textViewTags)
+        textViewTags?.text = if(noteTagString.isNullOrEmpty()) "<no tags>" else noteTagString
     }
+
+
 
 }

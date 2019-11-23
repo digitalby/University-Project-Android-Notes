@@ -1,13 +1,11 @@
 package com.example.lr3
 
 import android.app.Activity
-import android.content.ContentValues
 import android.content.DialogInterface
 import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -31,8 +29,8 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        val cursor = contentResolver.query(NotesProvider.CONTENT_URI,
-//            DBOpenHelper.ALL_COLUMNS,
+//        val cursor = contentResolver.query(NotesProvider.NOTES_URI,
+//            DBOpenHelper.ALL_COLUMNS_NOTES,
 //            null,
 //            null,
 //            null,
@@ -44,8 +42,8 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
 
         listView.setOnItemClickListener { parent, view, position, id ->
             val intent = Intent(this, EditorActivity::class.java)
-            val uri = Uri.parse("${NotesProvider.CONTENT_URI}/$id")
-            intent.putExtra(NotesProvider.CONTENT_ITEM_TYPE, uri)
+            val uri = Uri.parse("${NotesProvider.NOTES_URI}/$id")
+            intent.putExtra(NotesProvider.NOTE_ITEM_TYPE, uri)
             startActivityForResult(intent, EDITOR_REQUEST_CODE)
         }
 
@@ -54,7 +52,7 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
         return CursorLoader(this,
-                                    NotesProvider.CONTENT_URI,
+                                    NotesProvider.NOTES_URI,
                                     null,
                                     null,
                                     null,
@@ -85,7 +83,7 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         val dialogClickListener = DialogInterface.OnClickListener { dialog, which ->
             if (which == DialogInterface.BUTTON_POSITIVE) {
                 contentResolver.delete(
-                    NotesProvider.CONTENT_URI,
+                    NotesProvider.NOTES_URI,
                     null,
                     null
                     )
