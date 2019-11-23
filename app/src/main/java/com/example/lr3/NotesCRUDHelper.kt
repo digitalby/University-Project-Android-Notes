@@ -50,6 +50,42 @@ class NotesCRUDHelper(private val contentResolver: ContentResolver) {
         sanitizeTags()
     }
 
+    fun findNotes(tagString: String): List<Int> {
+        val tags = tagStringToList(tagString)
+        val tagIDs = mutableListOf<Int>()
+        for(tag in tags) {
+            val selection = "${DBOpenHelper.TAG_NAME} = '$tag'"
+            val cursor = contentResolver.query(
+                NotesProvider.TAGS_URI,
+                DBOpenHelper.ALL_COLUMNS_TAGS, selection, null, null
+            )
+            if (cursor?.moveToFirst() == true) {
+                tagIDs.add(cursor.getInt(cursor.getColumnIndex(DBOpenHelper.TAG_ID)))
+            } else {
+                cursor?.close()
+                return emptyList()
+            }
+            cursor.close()
+        }
+        val noteIDToCount = mutableMapOf<Int, Int>()
+        val selection = "${DBOpenHelper.LINK_TAG_ID} IN (${tagIDs.joinToString()})"
+        val cursor = contentResolver.query(NotesProvider.LINKS_URI,
+            DBOpenHelper.ALL_COLUMNS_LINKS, selection, null, null)
+        if(cursor?.moveToFirst() == false)
+            return emptyList()
+        do {
+            val noteID = cursor?.getInt(cursor.getColumnIndex(DBOpenHelper.LINK_NOTE_ID))
+            if(noteIDToCount.containsKey(noteID)) {
+                noteIDToCount[noteID!!] = noteIDToCount[noteID]!! + 1
+            } else {
+                noteIDToCount[noteID!!] = 1
+            }
+        } while (cursor?.moveToNext() == true)
+        cursor?.close()
+        val numberOfTags = tags.count()
+        return noteIDToCount.filterKeys { noteID -> noteIDToCount[noteID] == numberOfTags}.keys.toList()
+    }
+
     private fun tagStringToList(tagString: String): List<String> {
         var tags = tagString.split(',')
         tags = tags.map { tag -> tag.trim() }

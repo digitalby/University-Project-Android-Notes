@@ -6,17 +6,19 @@ import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.CursorAdapter
-import android.widget.ListView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.loader.app.LoaderManager
 import androidx.loader.content.CursorLoader
 import androidx.loader.content.Loader
+import kotlinx.android.synthetic.main.activity_main.view.*
 
 enum class SortMode {
     Date,
@@ -28,6 +30,7 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         const val EDITOR_REQUEST_CODE = 1001
     }
 
+    private var currentNoteFilter: String? = null
     private var currentSortMode = SortMode.Date
     private lateinit var cursorAdapter: CursorAdapter
 
@@ -46,6 +49,30 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
             startActivityForResult(intent, EDITOR_REQUEST_CODE)
         }
 
+        val searchView: EditText = findViewById(R.id.searchTagsEditText)
+        searchView.setCompoundDrawablesWithIntrinsicBounds(
+            ContextCompat.getDrawable(this, android.R.drawable.ic_menu_search),
+            null,
+            null,
+            null
+        )
+        searchView.addTextChangedListener { text ->
+            val string = text.toString().trim()
+            Log.d(null, "sv text changed to $string")
+            if(string.isNotEmpty()) {
+                val notesCRUDHelper = NotesCRUDHelper(contentResolver)
+                val list = notesCRUDHelper.findNotes(text.toString())
+                if (list.isNotEmpty()) {
+                    currentNoteFilter = "${DBOpenHelper.NOTE_ID} IN (${list.joinToString()})"
+                } else {
+                    currentNoteFilter = "${DBOpenHelper.NOTE_ID}=-1"
+                }
+            } else {
+                currentNoteFilter = null
+            }
+            restartLoader()
+        }
+
         supportLoaderManager.initLoader(0, null, this)
     }
 
@@ -55,7 +82,7 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         return CursorLoader(this,
                                     NotesProvider.NOTES_URI,
                                     null,
-                                    null,
+                                    currentNoteFilter,
                                     null,
                                     sortOrder)
     }
@@ -75,7 +102,6 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when {
-            item.itemId == R.id.action_delete_all -> deleteAllNotes()
             item.itemId == R.id.sort_by_date -> {
                 currentSortMode = SortMode.Date
                 restartLoader()
@@ -86,27 +112,6 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun deleteAllNotes() {
-        val dialogClickListener = DialogInterface.OnClickListener { _, which ->
-            if (which == DialogInterface.BUTTON_POSITIVE) {
-                contentResolver.delete(
-                    NotesProvider.NOTES_URI,
-                    null,
-                    null
-                    )
-                restartLoader()
-                Toast.makeText(this, getString(R.string.all_deleted),Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        val builder = AlertDialog.Builder(this)
-        builder.setMessage(getString(R.string.are_you_sure_delete_all_notes))
-               .setTitle(getString(R.string.delete_all_notes))
-               .setPositiveButton(getString(android.R.string.yes), dialogClickListener)
-               .setNegativeButton(getString(android.R.string.no), dialogClickListener)
-               .show()
     }
 
     private fun restartLoader() {
