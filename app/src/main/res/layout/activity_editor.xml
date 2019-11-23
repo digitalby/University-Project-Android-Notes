@@ -10,7 +10,7 @@
         android:id="@+id/dateTimeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
+        android:text=""
         app:layout_constraintBottom_toTopOf="@id/titleEditText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

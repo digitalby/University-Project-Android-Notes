@@ -13,4 +13,6 @@
     <string name="note_deleted">Note deleted</string>
     <string name="delete_note">Delete note</string>
     <string name="are_you_sure_delete_note">Are you sure to delete this node? This action cannot be undone.</string>
+    <string name="sort_by_date">Sort by date</string>
+    <string name="sort_by_title">Sort by title</string>
 </resources>

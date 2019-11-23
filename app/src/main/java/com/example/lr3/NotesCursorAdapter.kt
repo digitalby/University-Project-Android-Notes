@@ -1,6 +1,5 @@
 package com.example.lr3
 
-import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.view.LayoutInflater

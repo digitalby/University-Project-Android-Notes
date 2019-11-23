@@ -24,7 +24,7 @@
         android:layout_toEndOf="@+id/imageDocumentIcon"
         android:layout_toRightOf="@+id/imageDocumentIcon"
         android:singleLine="true"
-        android:text="Title goes here"
+        android:text=""
         android:textColor="@color/colorListItemPrimaryText"
         android:textSize="16sp" />
 
@@ -40,7 +40,7 @@
         android:layout_toEndOf="@+id/imageDocumentIcon"
         android:layout_toRightOf="@+id/imageDocumentIcon"
         android:singleLine="true"
-        android:text="Tags go here"
+        android:text=""
         android:textColor="@color/colorListItemSecondaryText"
         android:textSize="14sp" />
 
@@ -57,7 +57,7 @@
         android:layout_toRightOf="@+id/imageDocumentIcon"
         android:singleLine="true"
         android:gravity="center|start"
-        android:text="DateTime goes here"
+        android:text=""
         android:textColor="@color/colorListItemSecondaryText"
         android:textSize="12sp" />
 <!--        android:layout_alignParentEnd="true"-->

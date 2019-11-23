@@ -18,29 +18,28 @@ import androidx.loader.app.LoaderManager
 import androidx.loader.content.CursorLoader
 import androidx.loader.content.Loader
 
+enum class SortMode {
+    Date,
+    Title
+}
+
 class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> {
     companion object {
         const val EDITOR_REQUEST_CODE = 1001
     }
 
+    private var currentSortMode = SortMode.Date
     private lateinit var cursorAdapter: CursorAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        val cursor = contentResolver.query(NotesProvider.NOTES_URI,
-//            DBOpenHelper.ALL_COLUMNS_NOTES,
-//            null,
-//            null,
-//            null,
-//            null)
-
         cursorAdapter = NotesCursorAdapter(this, null, 0)
         val listView: ListView = findViewById(R.id.list)
         listView.adapter = cursorAdapter
 
-        listView.setOnItemClickListener { parent, view, position, id ->
+        listView.setOnItemClickListener { _, _, _, id ->
             val intent = Intent(this, EditorActivity::class.java)
             val uri = Uri.parse("${NotesProvider.NOTES_URI}/$id")
             intent.putExtra(NotesProvider.NOTE_ITEM_TYPE, uri)
@@ -51,12 +50,14 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
+        val sortOrder = if(currentSortMode == SortMode.Date) "${DBOpenHelper.NOTE_CREATED} DESC"
+                        else "${DBOpenHelper.NOTE_TITLE} ASC"
         return CursorLoader(this,
                                     NotesProvider.NOTES_URI,
                                     null,
                                     null,
                                     null,
-                                    null)
+                                    sortOrder)
     }
 
     override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {
@@ -73,14 +74,22 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_delete_all) {
-            deleteAllNotes()
+        when {
+            item.itemId == R.id.action_delete_all -> deleteAllNotes()
+            item.itemId == R.id.sort_by_date -> {
+                currentSortMode = SortMode.Date
+                restartLoader()
+            }
+            item.itemId == R.id.sort_by_title -> {
+                currentSortMode = SortMode.Title
+                restartLoader()
+            }
         }
         return super.onOptionsItemSelected(item)
     }
 
     private fun deleteAllNotes() {
-        val dialogClickListener = DialogInterface.OnClickListener { dialog, which ->
+        val dialogClickListener = DialogInterface.OnClickListener { _, which ->
             if (which == DialogInterface.BUTTON_POSITIVE) {
                 contentResolver.delete(
                     NotesProvider.NOTES_URI,

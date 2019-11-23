@@ -31,8 +31,6 @@ class NotesProvider: ContentProvider() {
         private const val LINKS_ID = 6
 
         const val NOTE_ITEM_TYPE = "Note"
-        const val TAG_ITEM_TYPE = "Tag"
-        const val LINK_ITEM_TYPE = "Link"
 
         init {
             uriMatcher.addURI(AUTHORITY, BASE_PATH_NOTES, NOTES)
@@ -78,14 +76,14 @@ class NotesProvider: ContentProvider() {
                 null,
                 null,
                 null,
-                "${DBOpenHelper.NOTE_CREATED} DESC")
+                sortOrder)
             NOTES_ID -> return database.query(DBOpenHelper.TABLE_NOTES,
                 DBOpenHelper.ALL_COLUMNS_NOTES,
                 "${DBOpenHelper.NOTE_ID}=${uri.lastPathSegment}",
                 null,
                 null,
                 null,
-                "${DBOpenHelper.NOTE_CREATED} DESC")
+                sortOrder)
             TAGS -> return database.query(DBOpenHelper.TABLE_TAGS,
                 DBOpenHelper.ALL_COLUMNS_TAGS,
                 selection,
