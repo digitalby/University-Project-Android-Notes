@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical">
+
+    <ImageView
+        android:id="@+id/imageDocumentIcon"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:contentDescription="@string/note"
+        android:src="@drawable/file_document_box" />
+
+    <TextView
+        android:id="@+id/textViewNoteGrid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageDocumentIcon"
+        android:layout_alignStart="@+id/imageDocumentIcon"
+        android:layout_alignLeft="@+id/imageDocumentIcon"
+        android:layout_alignEnd="@+id/imageDocumentIcon"
+        android:layout_alignRight="@+id/imageDocumentIcon"
+        android:layout_marginBottom="2dp"
+        android:gravity="center|top"
+        android:lines="2"
+        android:singleLine="false"
+        android:textColor="@color/colorListItemPrimaryText"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/textViewTagsGrid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textViewNoteGrid"
+        android:layout_alignStart="@+id/textViewNoteGrid"
+        android:layout_alignLeft="@+id/textViewNoteGrid"
+        android:layout_alignEnd="@+id/textViewNoteGrid"
+        android:layout_alignRight="@+id/textViewNoteGrid"
+        android:gravity="center|top"
+        android:singleLine="false"
+        android:text=""
+        android:textColor="@color/colorListItemSecondaryText"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/textViewDateTimeGrid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textViewTagsGrid"
+        android:layout_alignStart="@+id/textViewTagsGrid"
+        android:layout_alignLeft="@+id/textViewTagsGrid"
+        android:layout_alignEnd="@+id/textViewTagsGrid"
+        android:layout_alignRight="@+id/textViewTagsGrid"
+        android:gravity="center|top"
+        android:lines="2"
+        android:singleLine="false"
+        android:textColor="@color/colorListItemSecondaryText"
+        android:textSize="12sp" />
+
+
+</RelativeLayout>

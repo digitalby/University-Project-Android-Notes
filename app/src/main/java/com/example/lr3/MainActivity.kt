@@ -39,10 +39,19 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         setContentView(R.layout.activity_main)
 
         cursorAdapter = NotesCursorAdapter(this, null, 0)
-        val listView: ListView = findViewById(R.id.list)
-        listView.adapter = cursorAdapter
+        val listView: ListView? = findViewById(R.id.list)
+        listView?.adapter = cursorAdapter
+        val gridView: GridView? = findViewById(R.id.grid)
+        gridView?.adapter = cursorAdapter
 
-        listView.setOnItemClickListener { _, _, _, id ->
+        listView?.setOnItemClickListener { _, _, _, id ->
+            val intent = Intent(this, EditorActivity::class.java)
+            val uri = Uri.parse("${NotesProvider.NOTES_URI}/$id")
+            intent.putExtra(NotesProvider.NOTE_ITEM_TYPE, uri)
+            startActivityForResult(intent, EDITOR_REQUEST_CODE)
+        }
+
+        gridView?.setOnItemClickListener { _, _, _, id ->
             val intent = Intent(this, EditorActivity::class.java)
             val uri = Uri.parse("${NotesProvider.NOTES_URI}/$id")
             intent.putExtra(NotesProvider.NOTE_ITEM_TYPE, uri)

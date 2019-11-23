@@ -60,12 +60,6 @@
         android:text=""
         android:textColor="@color/colorListItemSecondaryText"
         android:textSize="12sp" />
-<!--        android:layout_alignParentEnd="true"-->
-<!--        android:layout_alignParentRight="true"-->
-<!--        android:layout_margin="1dp"-->
-<!--        android:layout_toEndOf="@+id/textViewTags"-->
-<!--        android:layout_toRightOf="@+id/textViewTags"-->
-<!--        android:layout_below="@id/textViewNote"-->
 
 
 </RelativeLayout>

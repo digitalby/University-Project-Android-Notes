@@ -87,7 +87,6 @@ class EditorActivity : AppCompatActivity() {
             Intent.ACTION_EDIT -> {
                 val updateTags = oldTagString != newTagString
                 crudHelper.updateNote(id!!.toInt(), newTitle, newText, newTagString, updateTags)
-                Toast.makeText(this, "Note updated", Toast.LENGTH_SHORT).show()
                 setResult(RESULT_OK)
             }
         }
