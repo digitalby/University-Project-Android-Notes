@@ -1,7 +1,6 @@
 package com.example.lr3
 
 import android.app.Activity
-import android.content.DialogInterface
 import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
@@ -10,15 +9,16 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.*
-import androidx.appcompat.app.AlertDialog
+import android.widget.CursorAdapter
+import android.widget.EditText
+import android.widget.GridView
+import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.loader.app.LoaderManager
 import androidx.loader.content.CursorLoader
 import androidx.loader.content.Loader
-import kotlinx.android.synthetic.main.activity_main.view.*
 
 enum class SortMode {
     Date,
@@ -68,16 +68,16 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         searchView.addTextChangedListener { text ->
             val string = text.toString().trim()
             Log.d(null, "sv text changed to $string")
-            if(string.isNotEmpty()) {
+            currentNoteFilter = if(string.isNotEmpty()) {
                 val notesCRUDHelper = NotesCRUDHelper(contentResolver)
                 val list = notesCRUDHelper.findNotes(text.toString())
                 if (list.isNotEmpty()) {
-                    currentNoteFilter = "${DBOpenHelper.NOTE_ID} IN (${list.joinToString()})"
+                    "${DBOpenHelper.NOTE_ID} IN (${list.joinToString()})"
                 } else {
-                    currentNoteFilter = "${DBOpenHelper.NOTE_ID}=-1"
+                    "${DBOpenHelper.NOTE_ID}=-1"
                 }
             } else {
-                currentNoteFilter = null
+                null
             }
             restartLoader()
         }

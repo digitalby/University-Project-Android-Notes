@@ -27,6 +27,11 @@ class NotesCursorAdapter(context: Context?, cursor: Cursor?, flags: Int):
         val noteTitle = cursor?.getString(cursor.getColumnIndex(DBOpenHelper.NOTE_TITLE))
         titleTextView?.text = noteTitle
         titleTextViewGrid?.text = noteTitle
+//        if(titleTextViewGrid?.lineCount!! > 2) {
+//            titleTextViewGrid.ellipsize
+//        } else {
+//            titleTextViewGrid.setLines(2)
+//        }
 
         val noteDateTime = cursor?.getString(cursor.getColumnIndex(DBOpenHelper.NOTE_CREATED))
         dateTimeTextView?.text = noteDateTime

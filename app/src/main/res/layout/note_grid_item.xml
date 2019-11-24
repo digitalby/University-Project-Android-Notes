@@ -24,8 +24,10 @@
         android:layout_alignEnd="@+id/imageDocumentIcon"
         android:layout_alignRight="@+id/imageDocumentIcon"
         android:layout_marginBottom="2dp"
+        android:ellipsize="end"
         android:gravity="center|top"
         android:lines="2"
+        android:maxLines="2"
         android:singleLine="false"
         android:textColor="@color/colorListItemPrimaryText"
         android:textSize="14sp" />
