@@ -1,4 +1,4 @@
-package com.example.lr3
+package me.digitalby.lr3
 
 import android.content.Context
 import android.database.Cursor
@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CursorAdapter
 import android.widget.TextView
+import me.digitalby.lr3.R
 
 class NotesCursorAdapter(context: Context?, cursor: Cursor?, flags: Int):
     CursorAdapter(context, cursor, flags) {

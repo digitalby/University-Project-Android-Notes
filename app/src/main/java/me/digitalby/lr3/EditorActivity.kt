@@ -1,4 +1,4 @@
-package com.example.lr3
+package me.digitalby.lr3
 
 import android.app.Activity
 import android.content.DialogInterface
@@ -12,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import me.digitalby.lr3.R
 
 
 class EditorActivity : AppCompatActivity() {
@@ -51,7 +52,8 @@ class EditorActivity : AppCompatActivity() {
             id = uri.lastPathSegment
             val noteFilter = "${DBOpenHelper.NOTE_ID}=$id"
 
-            val cursor = contentResolver.query(uri, DBOpenHelper.ALL_COLUMNS_NOTES, noteFilter, null, null)
+            val cursor = contentResolver.query(uri,
+                DBOpenHelper.ALL_COLUMNS_NOTES, noteFilter, null, null)
             cursor?.moveToFirst()
             oldText = cursor?.getString(cursor.getColumnIndex(DBOpenHelper.NOTE_TEXT))!!
             oldTitle = cursor.getString(cursor.getColumnIndex(DBOpenHelper.NOTE_TITLE))!!

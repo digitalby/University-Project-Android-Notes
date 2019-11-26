@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.lr3">
+    package="me.digitalby.lr3">
 
     <application
         android:allowBackup="true"
@@ -9,13 +9,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".EditorActivity" android:parentActivityName=".MainActivity">
+        <activity android:name="me.digitalby.lr3.EditorActivity" android:parentActivityName="me.digitalby.lr3.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity"
+                android:value="me.digitalby.lr3.MainActivity"
                 />
         </activity>
-        <activity android:name=".MainActivity">
+        <activity android:name="me.digitalby.lr3.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,8 +24,8 @@
         </activity>
 
         <provider
-            android:name=".NotesProvider"
-            android:authorities="com.example.LR3.notesprovider"
+            android:name="me.digitalby.lr3.NotesProvider"
+            android:authorities="me.digitalby.LR3.notesprovider"
             android:exported="false" />
     </application>
 

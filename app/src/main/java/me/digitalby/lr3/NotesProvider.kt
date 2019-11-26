@@ -1,4 +1,4 @@
-package com.example.lr3
+package me.digitalby.lr3
 
 import android.content.ContentProvider
 import android.content.ContentValues
@@ -15,7 +15,7 @@ class NotesProvider: ContentProvider() {
     companion object {
         private val uriMatcher = UriMatcher(UriMatcher.NO_MATCH)
 
-        private const val AUTHORITY = "com.example.LR3.notesprovider"
+        private const val AUTHORITY = "me.digitalby.LR3.notesprovider"
         private const val BASE_PATH_NOTES = "notes"
         private const val BASE_PATH_TAGS = "tags"
         private const val BASE_PATH_LINKS = "links"
@@ -33,12 +33,33 @@ class NotesProvider: ContentProvider() {
         const val NOTE_ITEM_TYPE = "Note"
 
         init {
-            uriMatcher.addURI(AUTHORITY, BASE_PATH_NOTES, NOTES)
-            uriMatcher.addURI(AUTHORITY, "$BASE_PATH_NOTES/#", NOTES_ID)
-            uriMatcher.addURI(AUTHORITY, BASE_PATH_TAGS, TAGS)
-            uriMatcher.addURI(AUTHORITY, "$BASE_PATH_TAGS/#", TAGS_ID)
-            uriMatcher.addURI(AUTHORITY, BASE_PATH_LINKS, LINKS)
-            uriMatcher.addURI(AUTHORITY, "$BASE_PATH_LINKS/#", LINKS_ID)
+            uriMatcher.addURI(
+                AUTHORITY,
+                BASE_PATH_NOTES,
+                NOTES
+            )
+            uriMatcher.addURI(
+                AUTHORITY, "$BASE_PATH_NOTES/#",
+                NOTES_ID
+            )
+            uriMatcher.addURI(
+                AUTHORITY,
+                BASE_PATH_TAGS,
+                TAGS
+            )
+            uriMatcher.addURI(
+                AUTHORITY, "$BASE_PATH_TAGS/#",
+                TAGS_ID
+            )
+            uriMatcher.addURI(
+                AUTHORITY,
+                BASE_PATH_LINKS,
+                LINKS
+            )
+            uriMatcher.addURI(
+                AUTHORITY, "$BASE_PATH_LINKS/#",
+                LINKS_ID
+            )
         }
     }
 
@@ -70,42 +91,48 @@ class NotesProvider: ContentProvider() {
         sortOrder: String?
     ): Cursor? {
         when(uriMatcher.match(uri)) {
-            NOTES -> return database.query(DBOpenHelper.TABLE_NOTES,
+            NOTES -> return database.query(
+                DBOpenHelper.TABLE_NOTES,
                 DBOpenHelper.ALL_COLUMNS_NOTES,
                 selection,
                 null,
                 null,
                 null,
                 sortOrder)
-            NOTES_ID -> return database.query(DBOpenHelper.TABLE_NOTES,
+            NOTES_ID -> return database.query(
+                DBOpenHelper.TABLE_NOTES,
                 DBOpenHelper.ALL_COLUMNS_NOTES,
                 "${DBOpenHelper.NOTE_ID}=${uri.lastPathSegment}",
                 null,
                 null,
                 null,
                 sortOrder)
-            TAGS -> return database.query(DBOpenHelper.TABLE_TAGS,
+            TAGS -> return database.query(
+                DBOpenHelper.TABLE_TAGS,
                 DBOpenHelper.ALL_COLUMNS_TAGS,
                 selection,
                 null,
                 null,
                 null,
                 "${DBOpenHelper.TAG_NAME} ASC")
-            TAGS_ID -> return database.query(DBOpenHelper.TABLE_TAGS,
+            TAGS_ID -> return database.query(
+                DBOpenHelper.TABLE_TAGS,
                 DBOpenHelper.ALL_COLUMNS_TAGS,
                 "${DBOpenHelper.TAG_ID}=${uri.lastPathSegment}",
                 null,
                 null,
                 null,
                 "${DBOpenHelper.TAG_NAME} ASC")
-            LINKS -> return database.query(DBOpenHelper.TABLE_LINKS,
+            LINKS -> return database.query(
+                DBOpenHelper.TABLE_LINKS,
                 DBOpenHelper.ALL_COLUMNS_LINKS,
                 selection,
                 null,
                 null,
                 null,
                 "${DBOpenHelper.LINK_NOTE_ID} DESC")
-            LINKS_ID -> return database.query(DBOpenHelper.TABLE_LINKS,
+            LINKS_ID -> return database.query(
+                DBOpenHelper.TABLE_LINKS,
                 DBOpenHelper.ALL_COLUMNS_LINKS,
                 "${DBOpenHelper.LINK_ID}=${uri.lastPathSegment}",
                 null,

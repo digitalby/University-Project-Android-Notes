@@ -1,4 +1,4 @@
-package com.example.lr3
+package me.digitalby.lr3
 
 import android.content.ContentResolver
 import android.content.ContentValues
@@ -9,7 +9,10 @@ class NotesCRUDHelper(private val contentResolver: ContentResolver) {
         val values = ContentValues()
         values.put(DBOpenHelper.NOTE_TITLE, noteTitle)
         values.put(DBOpenHelper.NOTE_TEXT, noteText)
-        values.put(DBOpenHelper.NOTE_CREATED, DateTimeHelper.getFormattedDate())
+        values.put(
+            DBOpenHelper.NOTE_CREATED,
+            DateTimeHelper.getFormattedDate()
+        )
 
 
         val tagList = tagStringToList(noteTagString)
@@ -25,7 +28,10 @@ class NotesCRUDHelper(private val contentResolver: ContentResolver) {
         val values = ContentValues()
         values.put(DBOpenHelper.NOTE_TITLE, noteTitle)
         values.put(DBOpenHelper.NOTE_TEXT, noteText)
-        values.put(DBOpenHelper.NOTE_CREATED, DateTimeHelper.getFormattedDate())
+        values.put(
+            DBOpenHelper.NOTE_CREATED,
+            DateTimeHelper.getFormattedDate()
+        )
 
         if(updateTags) {
             unlinkTags(noteId)
@@ -69,7 +75,8 @@ class NotesCRUDHelper(private val contentResolver: ContentResolver) {
         }
         val noteIDToCount = mutableMapOf<Int, Int>()
         val selection = "${DBOpenHelper.LINK_TAG_ID} IN (${tagIDs.joinToString()})"
-        val cursor = contentResolver.query(NotesProvider.LINKS_URI,
+        val cursor = contentResolver.query(
+            NotesProvider.LINKS_URI,
             DBOpenHelper.ALL_COLUMNS_LINKS, selection, null, null)
         if(cursor?.moveToFirst() == false)
             return emptyList()
@@ -110,7 +117,8 @@ class NotesCRUDHelper(private val contentResolver: ContentResolver) {
     }
 
     private fun sanitizeTags() {
-        val cursor = contentResolver.query(NotesProvider.TAGS_URI,
+        val cursor = contentResolver.query(
+            NotesProvider.TAGS_URI,
             DBOpenHelper.ALL_COLUMNS_TAGS, null, null, null)
         if(cursor?.moveToFirst() == true) {
             val tag = cursor.getString(cursor.getColumnIndex(DBOpenHelper.TAG_NAME))
@@ -118,7 +126,8 @@ class NotesCRUDHelper(private val contentResolver: ContentResolver) {
             val cursorId = cursor.getInt(cursor.getColumnIndex(DBOpenHelper.TAG_ID))
             cursor.close()
             val linkSelection = "${DBOpenHelper.LINK_TAG_ID} = $cursorId"
-            val cursorLinks = contentResolver.query(NotesProvider.LINKS_URI,
+            val cursorLinks = contentResolver.query(
+                NotesProvider.LINKS_URI,
                 DBOpenHelper.ALL_COLUMNS_LINKS, linkSelection, null, null)
             if(cursorLinks?.moveToFirst() == false) {
                 contentResolver.delete(NotesProvider.TAGS_URI, selection, null)
@@ -132,7 +141,8 @@ class NotesCRUDHelper(private val contentResolver: ContentResolver) {
 
         for(tag in tags) {
             val selection = "${DBOpenHelper.TAG_NAME} = '$tag'"
-            val cursor = contentResolver.query(NotesProvider.TAGS_URI,
+            val cursor = contentResolver.query(
+                NotesProvider.TAGS_URI,
                 DBOpenHelper.ALL_COLUMNS_TAGS, selection, null, null)
             if(cursor?.moveToFirst() == true) {
                 ret.add(cursor.getInt(cursor.getColumnIndex(DBOpenHelper.TAG_ID)))

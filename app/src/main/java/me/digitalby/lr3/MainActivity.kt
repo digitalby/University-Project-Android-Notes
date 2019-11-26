@@ -1,4 +1,4 @@
-package com.example.lr3
+package me.digitalby.lr3
 
 import android.app.Activity
 import android.content.Intent
@@ -19,6 +19,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.loader.app.LoaderManager
 import androidx.loader.content.CursorLoader
 import androidx.loader.content.Loader
+import me.digitalby.lr3.R
 
 enum class SortMode {
     Date,
@@ -48,14 +49,18 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
             val intent = Intent(this, EditorActivity::class.java)
             val uri = Uri.parse("${NotesProvider.NOTES_URI}/$id")
             intent.putExtra(NotesProvider.NOTE_ITEM_TYPE, uri)
-            startActivityForResult(intent, EDITOR_REQUEST_CODE)
+            startActivityForResult(intent,
+                EDITOR_REQUEST_CODE
+            )
         }
 
         gridView?.setOnItemClickListener { _, _, _, id ->
             val intent = Intent(this, EditorActivity::class.java)
             val uri = Uri.parse("${NotesProvider.NOTES_URI}/$id")
             intent.putExtra(NotesProvider.NOTE_ITEM_TYPE, uri)
-            startActivityForResult(intent, EDITOR_REQUEST_CODE)
+            startActivityForResult(intent,
+                EDITOR_REQUEST_CODE
+            )
         }
 
         val searchView: EditText = findViewById(R.id.searchTagsEditText)
@@ -89,7 +94,7 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         val sortOrder = if(currentSortMode == SortMode.Date) "${DBOpenHelper.NOTE_CREATED} DESC"
                         else "${DBOpenHelper.NOTE_TITLE} ASC"
         return CursorLoader(this,
-                                    NotesProvider.NOTES_URI,
+            NotesProvider.NOTES_URI,
                                     null,
                                     currentNoteFilter,
                                     null,

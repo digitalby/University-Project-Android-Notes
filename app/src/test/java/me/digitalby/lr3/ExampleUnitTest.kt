@@ -1,4 +1,4 @@
-package com.example.lr3
+package me.digitalby.lr3
 
 import org.junit.Test
 

@@ -1,4 +1,4 @@
-package com.example.lr3
+package me.digitalby.lr3
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -6,7 +6,10 @@ import android.database.sqlite.SQLiteOpenHelper
 
 
 
-class DBOpenHelper constructor(context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class DBOpenHelper constructor(context: Context): SQLiteOpenHelper(context,
+    DATABASE_NAME, null,
+    DATABASE_VERSION
+) {
 
     companion object {
         private const val DATABASE_NAME = "notes.db"
@@ -28,9 +31,22 @@ class DBOpenHelper constructor(context: Context): SQLiteOpenHelper(context, DATA
         const val LINK_NOTE_ID = "note_id"
         const val LINK_TAG_ID = "tag_id"
 
-        val ALL_COLUMNS_NOTES = arrayOf(NOTE_ID, NOTE_TITLE, NOTE_TEXT, NOTE_CREATED, NOTE_TAGSTRING)
-        val ALL_COLUMNS_TAGS = arrayOf(TAG_ID, TAG_NAME)
-        val ALL_COLUMNS_LINKS = arrayOf(LINK_ID, LINK_NOTE_ID, LINK_TAG_ID)
+        val ALL_COLUMNS_NOTES = arrayOf(
+            NOTE_ID,
+            NOTE_TITLE,
+            NOTE_TEXT,
+            NOTE_CREATED,
+            NOTE_TAGSTRING
+        )
+        val ALL_COLUMNS_TAGS = arrayOf(
+            TAG_ID,
+            TAG_NAME
+        )
+        val ALL_COLUMNS_LINKS = arrayOf(
+            LINK_ID,
+            LINK_NOTE_ID,
+            LINK_TAG_ID
+        )
 
         private const val NOTES_TABLE_CREATE = "CREATE TABLE $TABLE_NOTES (" +
                 "$NOTE_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
