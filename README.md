@@ -16,6 +16,6 @@ SQLite is used for data persistency, with a ```NotesProvider``` implemented to h
 
 All CRUD operations are done asynchronously with the help of a ```CursorLoader```. ```NotesCRUDHelper``` provides an even higher level of abstraction to facilitate inserting, updating, deleting, and querying notes and/or their tags. The user can also sort their notes, either by date or by title.
 
-The app features Material Design elements, (specifically, a ```FloatingActionButton```) with a blue color theme and pre-imported icons created by Google.
+The app features Material Design elements (specifically, a ```FloatingActionButton```), with a blue color theme and pre-imported icons created by Google.
 
 [screenshot]: screenshot.png
